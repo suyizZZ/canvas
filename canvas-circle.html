@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,body {
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <canvas id='canvas'></canvas>
+  <script>
+    let timer = null,
+    mouseTimer = null,
+        c = document.querySelector('#canvas'),
+        ctx = c.getContext('2d'),
+        WIDTH = document.body.offsetWidth,
+        HEIGHT = document.body.offsetHeight,
+        arr = [];
+        c.width = WIDTH;
+        c.height = HEIGHT;
+
+    function CirCle(w, h) {
+      this.w = w;
+      this.h = h;
+      this.r = 2;
+      this.color = `rgba(255,2,255, 1)`;
+      this.apha = 1;
+    }
+
+    CirCle.prototype = {
+      draw: function() {
+        if(!arr.length) {
+          return;
+        }
+        ctx.lineWidth=10;
+        ctx.beginPath();
+        ctx.strokeStyle="red";
+        ctx.moveTo(arr[0].x,arr[0].y);
+        ctx.lineJoin="round";
+        for(let i = 1; i < arr.length; i++ ) {
+          ctx.lineTo(arr[i].x,arr[i].y);
+        }
+        // ctx.closePath();
+        ctx.stroke();
+        // ctx.fillStyle = this.color;
+        // ctx.arc( this.w, this.h,this.r,0, 2*Math.PI);
+        // ctx.fill();
+      }
+    }
+
+    window.onresize = (e) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        WIDTH = document.body.offsetWidth,
+        HEIGHT = document.body.offsetHeight;
+        c.width = WIDTH;
+        c.height = HEIGHT;
+      }, 0);
+    }
+
+    window.onmousemove = function(e) {
+      clearTimeout(mouseTimer);
+      mouseTimer = setTimeout(() => {
+        // arr.push(new CirCle(e.clientX, e.clientY));
+        arr.push({x: e.clientX, y: e.clientY});
+        console.log(arr);
+      }, 10)
+    }
+
+    const liner = new CirCle();
+    function animation() {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      // arr.forEach(v => v.draw());
+      liner.draw();
+      requestAnimationFrame(animation);
+    }
+
+    animation();
+  </script>
+</body>
+</html>

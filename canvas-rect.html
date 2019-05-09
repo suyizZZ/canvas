@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      let timer = null,
+        mouseTimer = null,
+        c = document.querySelector('#canvas'),
+        ctx = c.getContext('2d'),
+        WIDTH = document.body.offsetWidth,
+        HEIGHT = document.body.offsetHeight,
+        arr = [];
+      c.width = WIDTH;
+      c.height = HEIGHT;
+      class CanvasRect {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.sx = 2 * Math.random();
+          this.sy = 2 * Math.random();
+          this.color = `#ccc`;
+        }
+
+        // 计算就近的
+        lineCross = parms => {
+          const data = arr.filter(v => {
+            const dx = Math.abs(v.x - this.x),
+              dy = Math.abs(v.y - this.y),
+              dis = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+            if (dis === 0) {
+              return false;
+            }
+            return dis < parms;
+          });
+          return data;
+        };
+
+        draw = () => {
+          this.x += this.sx;
+          this.y += this.sy;
+          if ( (this.x > WIDTH && this.sx > 0) || (this.x < 0 && this.sx < 0)) {
+            this.sx *= -1;
+          }
+          if ( (this.y > HEIGHT && this.sy > 0) || (this.y < 0 && this.sy < 0)) {
+            this.sy *= -1;
+          }
+          ctx.strokeStyle = this.color;
+          ctx.strokeRect(this.x, this.y, 10, 10);
+          const arr = this.lineCross(150);
+          if (arr.length > 0) {
+            ctx.beginPath();
+            ctx.moveTo(this.x + 5, this.y + 5);
+            arr.forEach(v => {
+              ctx.lineTo(v.x + 5, v.y + 5);
+              // ctx.quadraticCurveTo((this.x + v.x)/ 2,(this.y + v.y)/ 2, v.x + 5, v.y + 5 );
+            });
+            ctx.stroke();
+          }
+        };
+      }
+
+      window.onresize = e => {
+        clearTimeout(timer);
+        console.log(1);
+        timer = setTimeout(() => {
+          (WIDTH = document.body.offsetWidth), (HEIGHT = document.body.offsetHeight);
+          c.width = WIDTH;
+          c.height = HEIGHT;
+        }, 0);
+      };
+
+      for (let i = 0; i < 40; i++) {
+        arr.push(new CanvasRect(~~WIDTH * Math.random(), ~~HEIGHT * Math.random()));
+      }
+
+      function animation() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        arr.forEach(v => v.draw());
+        requestAnimationFrame(animation);
+      }
+
+      animation();
+    </script>
+  </body>
+</html>
